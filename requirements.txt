@@ -1,0 +1,8 @@
+#pip install -r requirements.txt
+flask 
+sqlalchemy 
+#sqlite3
+opencv-python 
+pillow 
+pytesseract
+pdf2image

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Receipts</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul>
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+
+    <h1>Receipts</h1>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Store Name</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Items</th>
+            <th>Total</th>
+            <th>Payment Method</th>
+        </tr>
+        {% for receipt in receipts %}
+        <tr>
+            <td>{{ receipt.id }}</td>
+            <td>{{ receipt.store_name }}</td>
+            <td>{{ receipt.date }}</td>
+            <td>{{ receipt.time }}</td>
+            <td>
+                <ul>
+                    {% for item in receipt.items %}
+                    <li>{{ item.quantity }} x {{ item.name }} - ${{ item.price }}</li>
+                    {% endfor %}
+                </ul>
+            </td>
+            <td>${{ receipt.total }}</td>
+            <td>{{ receipt.payment_method }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <a href="{{ url_for('index') }}">Upload Another Receipt</a>
+
+
+
+    <form action="/delete/" method="POST">
+        <br/>
+        <input type="password" name="password" placeholder="Enter Password" required>
+        <br/>
+        <input type="number" name="receipt_id" placeholder="Enter Reciept ID Number" required>
+        <br/>
+        <button type="submit">Delete Receipt</button>
+    </form>    
+</body>
+</html>
+
+
+<!-- Receipt(store_name=store_name, date=date, time=time, items=items, total=total, payment_method=payment_method) -->
