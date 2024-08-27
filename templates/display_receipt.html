@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Display Receipt</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body style="text-align: center;">
+    <h3 style="margin:0;"><a href="{{ url_for('show_receipts') }}">Back</a></h3>
+    <h1 style="margin:0;">Receipt</h1>
+    
+    {% if file_extension in ['jpg', 'jpeg', 'png', 'gif'] %}
+        <img src="{{ image_url }}" alt="Receipt Image">
+    {% elif file_extension == 'pdf' %}
+        <iframe src="{{ image_url + "#toolbar=0&navpanes=0" }}" type="application/pdf" width="600" height="800" style="border:none">
+    {% else %}
+        <p>File format not supported.</p>
+    {% endif %}
+</body>
+</html>

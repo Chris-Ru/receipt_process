@@ -6,13 +6,16 @@
     <title>Upload Receipt</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
+
 <body>
-    <h1>Upload Receipt</h1>
-    <form action="{{ url_for('upload_file') }}" method="post" enctype="multipart/form-data">
+    <h1 style="text-align: center;">Upload Receipt</h1>
+    <form action="{{ url_for('upload_file') }}" method="POST" enctype="multipart/form-data">
         <!-- Updated accept attribute to allow image files and PDFs -->
-        <input type="file" name="file" accept="image/*,.pdf">
-        <button type="submit">Upload</button>
+        <input type="file" name="files" accept="image/*,.pdf" multiple>
+        <button class="center" type="submit">Upload</button>
     </form>
-    <a href="{{ url_for('show_receipts') }}">View Receipts</a>
+    <div style="text-align: center; width:80%;">
+        <a href="{{ url_for('show_receipts') }}">View Receipts</a>
+    </div>
 </body>
 </html>

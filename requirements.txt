@@ -5,4 +5,7 @@ sqlalchemy
 opencv-python 
 pillow 
 pytesseract
+tesseract
+tesseract-ocr
 pdf2image
+datefinder

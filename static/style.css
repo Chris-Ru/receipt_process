@@ -1,13 +1,17 @@
 body {
     font-family: Arial, sans-serif;
     margin: 20px;
+    background-color:#f4f4f4;
 }
 
 h1 {
-    color: #333;
+    font-size: 50px;
+    color: black;
 }
 
 form {
+    text-align: center;
+    width: 100%;
     margin-bottom: 20px;
 }
 
@@ -18,7 +22,7 @@ table {
 }
 
 table, th, td {
-    border: 1px solid #ddd;
+    border: 1px solid grey;
 }
 
 th, td {
@@ -26,6 +30,34 @@ th, td {
     text-align: left;
 }
 
+tr:nth-child(odd) {
+    background-color: darkgray;
+}
+
 th {
-    background-color: #f4f4f4;
+    background-color: lightgray;
+}
+
+input[type=password], input[type=number] {
+    border: none;
+    border-bottom: 2px solid gray;
+}
+
+input[type=password]:focus, input[type=number]:focus {
+    border: none;
+    border-bottom: 2px solid red;
+}
+
+input[type=password]:valid, input[type=number]:valid {
+    border: none;
+    border-bottom: 2px solid green;
+}
+
+.center {
+    text-align: center;
+}
+
+img {
+    width: 35%;
+    height: auto;
 }

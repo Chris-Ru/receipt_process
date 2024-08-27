@@ -6,6 +6,7 @@
     <title>Receipts</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
+
 <body>
     {% with messages = get_flashed_messages() %}
         {% if messages %}
@@ -17,8 +18,17 @@
         {% endif %}
     {% endwith %}
 
+    <h1 class="center">Receipts</h1>
+    
+    <form action="/delete/" method="POST">
+        <input type="password" name="password" placeholder="Enter Password" required>
+        <br/>
+        <input type="number" name="receipt_id" placeholder="Enter Reciept ID Number" required>
+        <br/>
+        <button type="submit">Delete Receipt</button>
+    </form>
+    <br/>
 
-    <h1>Receipts</h1>
     <table>
         <tr>
             <th>ID</th>
@@ -29,10 +39,11 @@
             <th>Total</th>
             <th>Payment Method</th>
         </tr>
-        {% for receipt in receipts %}
+        {% for receipt in receipts|reverse %}
         <tr>
             <td>{{ receipt.id }}</td>
-            <td>{{ receipt.store_name }}</td>
+            <!-- <td><a href={{ "file/"+receipt.filepath }}>{{ receipt.store_name }}</a></td> -->
+            <td><a href={{ "display_image/"+receipt.id|string }}>{{ receipt.store_name }}</a></td>
             <td>{{ receipt.date }}</td>
             <td>{{ receipt.time }}</td>
             <td>
@@ -47,18 +58,7 @@
         </tr>
         {% endfor %}
     </table>
-    <a href="{{ url_for('index') }}">Upload Another Receipt</a>
-
-
-
-    <form action="/delete/" method="POST">
-        <br/>
-        <input type="password" name="password" placeholder="Enter Password" required>
-        <br/>
-        <input type="number" name="receipt_id" placeholder="Enter Reciept ID Number" required>
-        <br/>
-        <button type="submit">Delete Receipt</button>
-    </form>    
+    <a href="{{ url_for('index') }}">Upload Another Receipt</a>  
 </body>
 </html>
 
