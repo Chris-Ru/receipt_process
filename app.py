@@ -54,6 +54,8 @@ Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
 session = Session()
 
+
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -129,15 +131,7 @@ def delete_receipt():
         return redirect(url_for('show_receipts'))
 
 @app.route('/update_receipt', methods=['POST'])
-def update_receipt_endpoint():
-    data = request.json
-    receipt_id = data.get('id')
-    store_name = data.get('store_name')
-    date = data.get('date')
-    time = data.get('time')
-    total = data.get('total')
-    payment_method = data.get('payment_method')
-
+def update_receipt_endpoint(receipt_id, store_name=None, date=None, time=None, total=None, payment_method=None):
     update_receipt(receipt_id, store_name, date, time, total, payment_method)
 
     return jsonify({"message": "Receipt updated successfully."})

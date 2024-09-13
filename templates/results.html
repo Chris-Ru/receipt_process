@@ -8,6 +8,7 @@
 </head>
 
 <body>
+    <h3><a href="{{ url_for('index')}}">Home</a></h3>
     {% with messages = get_flashed_messages() %}
         {% if messages %}
             <ul>
@@ -19,15 +20,39 @@
     {% endwith %}
 
     <h1 class="center">Receipts</h1>
-    
-    <form action="/delete/" method="POST">
-        <input type="password" name="password" placeholder="Enter Password" required>
-        <br/>
-        <input type="number" name="receipt_id" placeholder="Enter Reciept ID Number" required>
-        <br/>
-        <button type="submit">Delete Receipt</button>
-    </form>
-    <br/>
+    <div class="center">
+        <div class="formbox box" style="padding-top: 2%;">
+            <div class="center">
+                <form action="/delete/" method="POST" class="formbox">
+                    <h2 class="center">Delete Receipt</h2>
+                    <input type="password" name="password" placeholder="Enter Password" required>
+                    <br/>
+                    <input type="number" name="receipt_id" placeholder="Enter Reciept ID Number" required>
+                    <br/>
+                    <button type="submit">Delete Receipt</button>
+                </form>
+            </div>
+            
+            <div class="center">
+                <form action="/update/" method="POST" class="formbox">
+                    <h2 class="center">Update Receipt</h2>
+                    <input type="number" name="receipt_id" placeholder="Enter Reciept ID Number" required>
+                    <br/>
+                    <input type="text" name="store_name" placeholder="Enter New Store Name">
+                    <br/>
+                    <input type="date" name="date" placeholder="Enter New Date(MM/DD/YYYY)">
+                    <br/>
+                    <input type="time" name="time" placeholder="Enter New Time">
+                    <br/>
+                    <input type="number" name="total" placeholder="Enter New Total Amount">
+                    <br/>
+                    <input type="text" name="payment_method" placeholder="Enter Updated Payment Method">
+                    <br/>
+                    <button type="submit">Update Receipt</button>
+                </form>
+            </div>
+        </div>
+    </div>
 
     <table>
         <tr>

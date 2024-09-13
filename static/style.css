@@ -9,10 +9,40 @@ h1 {
     color: black;
 }
 
+h2 {
+    color:Purple;
+}
+
+.formbox {
+    border-radius: 25px;
+    background: #73AD21;
+    padding: 1%;
+    display: inline-table;
+    width: 60%;
+}
+
+.box {
+    /* width: 40%; */
+    background-color: lightgray; 
+    padding-top: 10px;
+}
+
 form {
-    text-align: center;
-    width: 100%;
     margin-bottom: 20px;
+    text-align: center;
+    padding-left: 50px;
+}
+
+form.input {
+    text-align: center;
+}
+
+.div.formbox {
+    padding-bottom: 0;
+}
+
+input {
+    text-align: center;
 }
 
 table {
