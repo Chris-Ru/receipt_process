@@ -100,7 +100,7 @@ def show_receipts():
     receipts = session.query(Receipt).all()
     return render_template('results.html', receipts=receipts)
 
-@app.route('/delete/', methods=['POST'])
+@app.route('/delete', methods=['POST'])
 def delete_receipt():
     if request.method == 'POST':
         password = request.form.get('password')
@@ -121,7 +121,7 @@ def delete_receipt():
             }
             session.delete(receipt)
             session.commit()
-            flash(f"200 Success: Receipt for {receipt_details['store_name']} that took place on {receipt_details['date']} with a total of {receipt_details['total']} was deleted.", "success")
+            flash(f"200 Success: Receipt for {receipt_details['store_name']} that took place on {receipt_details['date']} with a total of ${receipt_details['total']} was deleted from the Database.", "success")
             return redirect(url_for('show_receipts'))
         else:
             flash("Error: Receipt not found.", "error")
@@ -130,11 +130,22 @@ def delete_receipt():
         flash("Error: Unauthorized access.", "error")
         return redirect(url_for('show_receipts'))
 
-@app.route('/update_receipt', methods=['POST'])
-def update_receipt_endpoint(receipt_id, store_name=None, date=None, time=None, total=None, payment_method=None):
-    update_receipt(receipt_id, store_name, date, time, total, payment_method)
+@app.route('/update', methods=['POST'])
+def update_receipt_endpoint():
+    receipt_id = request.form.get('receipt_id')
+    store_name = request.form.get('store_name')
+    date = request.form.get('date')
+    time = request.form.get('time')
+    total = request.form.get('total')
+    payment_method = request.form.get('payment_method')
 
-    return jsonify({"message": "Receipt updated successfully."})
+    try:
+        update_receipt(receipt_id, store_name, date, time, total, payment_method)
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+    flash(f"Success: Receipt updated successfully.")
+    return redirect(url_for('show_receipts'))
 
 
 # API for displaying image

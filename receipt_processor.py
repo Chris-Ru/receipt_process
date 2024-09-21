@@ -113,7 +113,7 @@ def parse_date(text):
     # Define patterns for various date formats
     date_patterns = [
         r'\b(\d{4}/\d{2}/\d{2})\b',           # YYYY/MM/DD
-        r'\b(\d{2}/\d{2}/\d{2})\b',           # MM/DD/YY
+        r'\b(\d{1,2}/\d{2}/\d{2})\b',         # MM/DD/YY 
         r'\b(\d{2}/\d{2}/\d{4})\b',           # MM/DD/YYYY (edge case)
         r'\b(\d{4}-\d{2}-\d{2})\b',           # YYYY-MM-DD
         r'\b(\d{2}/\d{2}/\d{2,4})\b',         # MM/DD/YY or DD/MM/YYYY
@@ -134,10 +134,11 @@ def parse_date(text):
     if date_str:
         try:
             # Try parsing various formats
-            for fmt in ('%Y/%m/%d', '%m/%d/%Y', '%m/%d/%Y', '%Y-%m-%d', '%m/%d/%Y', '%d/%m/%Y', '%d-%m-%Y', '%d %m %Y'):
+            # for fmt in ('%Y/%m/%d', '%m/%d/%Y', '%m/%d/%Y', '%Y-%m-%d', '%m/%d/%Y', '%d/%m/%Y', '%d-%m-%Y', '%d-%m-%Y', '%d %m %Y'):
+            for fmt in ('%m/%d/%y', '%Y/%m/%d', '%m/%d/%Y', '%m/%d/%Y', '%Y-%m-%d', '%m/%d/%Y', '%d/%m/%Y', '%d/%m/%y', '%d-%m-%Y', '%d %b %Y', '%d-%b-%Y'):
                 try:
                     date_obj = datetime.strptime(date_str, fmt)
-                    formatted_date = date_obj.strftime('%Y-%m-%d')
+                    formatted_date = date_obj.strftime('%m-%d-%Y')
                     break
                 except ValueError:
                     continue
@@ -153,16 +154,18 @@ def parse_date(text):
 def parse_time(text):
     # Define patterns for time formats
     time_patterns = [
-        r'\b(\d{1,2}:\d{2} [APM]{2})\b',    # HH:MM AM/PM (12-hour format)
-        r'\b(\d{2}:\d{2})\b'                # HH:MM (24-hour format)
-        r'\b(\d{1,2}:\d{2}:\d{2} [APM]{2})\b',  # H:MM:SS AM/PM
-        r'\b(\d{1,2}:\d{2}:\d{2}[\w]{1})\b',  # HH:MM:SS A/P
+        r'\b(\d{1,2}:\d{2} [APM]{2})\b',       # HH:MM AM/PM (12-hour format)
+        r'\b(\d{2}:\d{2})\b',                  # HH:MM (24-hour format)
+        r'\b(\d{1,2}:\d{2}:\d{2} [APM]{2})\b', # H:MM:SS AM/PM
+        r'\b(\d{1,2}:\d{2}:\d{2}[\w]{1})\b',   # HH:MM:SS A/P
+        r'\b(\d{1,2}:\d{2}:\d{2}[\w]{1})\b',   # HH:MM:SS A/P
     ]
     
     # Extract time
     time_str = None
     for pattern in time_patterns:
         time_match = re.search(pattern, text)
+        # print("######   time_match => ", time_match, '\n')
         if time_match:
             time_str = time_match.group(1)
             # Check if it's already in AM/PM format
@@ -246,25 +249,24 @@ def parse_receipt(text):
 
 def update_receipt(receipt_id, store_name=None, date=None, time=None, total=None, payment_method=None):
     try:
-        # Fetch the record by its ID
-        receipt = session.query(Receipt).filter_by(id=receipt_id).one()
-
+        receipt = session.query(Receipt).get(receipt_id)
         # Update the fields if new values are provided
-        if store_name is not None:
+        if store_name:
             receipt.store_name = store_name
-        if date is not None:
+        if date:
             receipt.date = date
-        if time is not None:
+        if time:
             receipt.time = time
-        if total is not None:
+        if total:
             receipt.total = total
-        if payment_method is not None:
+        if payment_method:
             receipt.payment_method = payment_method
 
         # Commit the changes to the database
+        session.add(receipt)
         session.commit()
 
-        print("Receipt updated successfully.")
+        # print("Receipt updated successfully.")
 
     except NoResultFound:
         print(f"No receipt found with ID: {receipt_id}")
