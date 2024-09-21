@@ -30,6 +30,7 @@ def convert_pdf_to_images(pdf_path):
 # Function to perform OCR on images
 def perform_ocr(image):
     text = pytesseract.image_to_string(image)
+    print(text)
     return text
 
 def extract_text(image):
@@ -111,12 +112,13 @@ def process_receipt(file_path):
 def parse_date(text):
     # Define patterns for various date formats
     date_patterns = [
-        r'\b(\d{4}/\d{2}/\d{2})\b',         # YYYY/MM/DD
-        r'\b(\d{2}/\d{2}/\d{2})\b',         # MM/DD/YY
-        r'\b(\d{2}/\d{2}/\d{4})\b',         # MM/DD/YYYY (edge case)
-        r'\b(\d{4}-\d{2}-\d{2})\b',         # YYYY-MM-DD
-        r'\b(\d{1,2}/\d{1,2}/\d{2,4})\b',   # MM/DD/YY or DD/MM/YYYY
-        r'\b(\d{1,2}-[A-Za-z]{3}-\d{4})\b'  # DD-MON-YYYY
+        r'\b(\d{4}/\d{2}/\d{2})\b',           # YYYY/MM/DD
+        r'\b(\d{2}/\d{2}/\d{2})\b',           # MM/DD/YY
+        r'\b(\d{2}/\d{2}/\d{4})\b',           # MM/DD/YYYY (edge case)
+        r'\b(\d{4}-\d{2}-\d{2})\b',           # YYYY-MM-DD
+        r'\b(\d{2}/\d{2}/\d{2,4})\b',         # MM/DD/YY or DD/MM/YYYY
+        r'\b(\d{2}-[A-Za-z]{3}-\d{2,4})\b',   # DD-MON-YYYY
+        r'\b(\d{1,2}\s[A-Za-z]{3}\s\d{4})\b', # DD MON YYYY
     ]
 
     # Extract date
@@ -125,13 +127,14 @@ def parse_date(text):
         date_match = re.search(pattern, text)
         if date_match:
             date_str = date_match.group(1)
+            # print("######   date_str => ", date_str, '\n')
             break
     
     # Format the date
     if date_str:
         try:
             # Try parsing various formats
-            for fmt in ('%Y/%m/%d', '%m/%d/%y', '%m/%d/%Y', '%Y-%m-%d', '%m/%d/%y', '%d/%m/%Y'):
+            for fmt in ('%Y/%m/%d', '%m/%d/%Y', '%m/%d/%Y', '%Y-%m-%d', '%m/%d/%Y', '%d/%m/%Y', '%d-%m-%Y', '%d %m %Y'):
                 try:
                     date_obj = datetime.strptime(date_str, fmt)
                     formatted_date = date_obj.strftime('%Y-%m-%d')
@@ -153,6 +156,7 @@ def parse_time(text):
         r'\b(\d{1,2}:\d{2} [APM]{2})\b',    # HH:MM AM/PM (12-hour format)
         r'\b(\d{2}:\d{2})\b'                # HH:MM (24-hour format)
         r'\b(\d{1,2}:\d{2}:\d{2} [APM]{2})\b',  # H:MM:SS AM/PM
+        r'\b(\d{1,2}:\d{2}:\d{2}[\w]{1})\b',  # HH:MM:SS A/P
     ]
     
     # Extract time
