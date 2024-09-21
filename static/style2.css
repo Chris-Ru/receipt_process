@@ -1,0 +1,188 @@
+/* General styles */
+body {
+    font-family: 'Nunito', sans-serif;
+    background-color: #f7f7f7;
+    margin: 0;
+    padding: 0;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Ensure the body takes full height */
+}
+
+h1, h2 {
+    color: #333;
+    text-align: center;
+}
+
+main {
+    flex-grow: 1; /* Allows the main content to expand and push the footer down */
+}
+
+.container {
+    max-width: 1000px;
+    margin: 2em auto;
+    padding: 0 20px;
+}
+
+/* Navigation */
+nav {
+    background-color: #4a90e2;
+    padding: 1em;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+nav .logo {
+    color: white;
+    font-size: 1.5em;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+nav .nav-link {
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+/* Forms section */
+.forms-section {
+    display: flex; /* Use flexbox for layout */
+    justify-content: space-between; /* Space out the forms */
+    margin-bottom: 2em; /* Space below forms */
+}
+
+.form-container {
+    background-color: #fff;
+    padding: 2em;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    width: 45%; /* Limit width for larger screens */
+    margin: 1em; /* Margin for spacing */
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .forms-section {
+        flex-direction: column; /* Stack forms vertically on small screens */
+        align-items: center; /* Center the forms */
+    }
+
+    .form-container {
+        width: 100%; /* Full width on mobile */
+        margin: 0; /* Remove margins on mobile */
+        margin-bottom: 1em; /* Add space between stacked forms */
+    }
+}
+
+.form h2 {
+    margin-bottom: 1.5em;
+    font-size: 1.2em;
+    color: #4a90e2;
+}
+
+input, button {
+    width: 100%;
+    padding: 0.8em;
+    margin-bottom: 1em;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+button.btn {
+    background-color: #4a90e2;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+button.btn:hover {
+    background-color: #357ABD;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 1em;
+    background-color: #4a90e2;
+    color: white;
+    margin-top: 10%; /* Pushes the footer to the bottom */
+    width: auto;
+}
+
+/* Table styles */
+.table-container {
+    display: flex; /* Use flexbox for layout */
+    justify-content: center; /* Center the table */
+    margin: 2em 0; /* Space around the table */
+}
+
+.receipt-table {
+    width: 100%; /* Full width for responsiveness */
+    border-collapse: collapse;
+    background-color: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin: 0; /* Remove default margin */
+}
+
+/* Table header and cell styles */
+.receipt-table th, .receipt-table td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+    text-align: center;
+}
+
+.receipt-table th {
+    background-color: #4a90e2;
+    color: white;
+}
+
+.receipt-table a {
+    color: #4a90e2;
+    text-decoration: none;
+}
+
+.receipt-table a:hover {
+    text-decoration: underline;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .form-container {
+        max-width: 90%; /* Forms take up most of the width on smaller screens */
+    }
+
+    .table-container {
+        flex-direction: column; /* Stack tables vertically on small screens */
+        align-items: center; /* Center the table */
+    }
+
+    .receipt-table {
+        width: auto; /* Allow the table to be as wide as needed */
+        max-width: none; /* Remove max-width constraint on small screens */
+    }
+
+    .receipt-table th, .receipt-table td {
+        padding: 10px; /* Adjust padding for smaller screens */
+    }
+}
+
+@media (max-width: 480px) {
+    nav .logo {
+        font-size: 1.2em; /* Adjust logo size for small screens */
+    }
+
+    button.btn {
+        padding: 0.6em; /* Smaller buttons on mobile */
+    }
+
+    .form h2 {
+        font-size: 1em; /* Smaller heading on mobile */
+    }
+
+    .receipt-table th, .receipt-table td {
+        font-size: 0.9em; /* Smaller font size for better fit */
+    }
+}

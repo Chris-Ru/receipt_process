@@ -6,17 +6,24 @@
     <title>Upload Receipt</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-
 <body>
-    <h3><a href="{{ url_for('show_receipts')}}">View Receipts</a></h3>
-    <h1 style="text-align: center;">Upload Receipt</h1>
-    <form action="{{ url_for('upload_file') }}" method="POST" enctype="multipart/form-data">
-        <!-- Updated accept attribute to allow image files and PDFs -->
-        <input type="file" name="files" accept="image/*,.pdf" multiple>
-        <button class="center" type="submit">Upload</button>
-    </form>
-    <!-- <div style="text-align: center; width:80%;">
-        <a href="{{ url_for('show_receipts') }}">View Receipts</a>
-    </div> -->
+    <header>
+        <nav>
+            <a href="{{ url_for('index') }}" class="logo">Receipt Manager</a>
+            <a href="{{ url_for('show_receipts') }}" class="nav-link">View Receipts</a>
+        </nav>
+    </header>
+
+    <main>
+        <h1>Upload Receipt</h1>
+        <form action="{{ url_for('upload_file') }}" method="POST" enctype="multipart/form-data" class="upload-form">
+            <input type="file" name="files" accept="image/*,.pdf" multiple required>
+            <button type="submit" class="btn">Upload</button>
+        </form>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Receipt Manager. All Rights Reserved.</p>
+    </footer>
 </body>
 </html>

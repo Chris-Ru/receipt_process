@@ -1,93 +1,116 @@
+/* General styles */
 body {
-    font-family: Arial, sans-serif;
-    margin: 20px;
-    background-color:#f4f4f4;
+    font-family: 'Nunito', sans-serif;
+    background-color: #f7f7f7;
+    margin: 0;
+    padding: 0;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Ensure the body takes full height */
+}
+
+header {
+    background-color: #4a90e2;
+    padding: 1em;
+}
+
+main {
+    flex-grow: 1; /* Allows the main content to expand and push the footer down */
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+nav .logo {
+    color: white;
+    font-size: 1.5em;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+nav .nav-link {
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+/* Main content styles */
+main {
+    max-width: 1000px;
+    margin: 2em auto;
+    padding: 0 20px;
+    text-align: center; /* Center content */
 }
 
 h1 {
-    font-size: 50px;
-    color: black;
+    color: #333;
 }
 
-h2 {
-    color:Purple;
+.upload-form {
+    margin-top: 2em;
 }
 
-.formbox {
-    border-radius: 25px;
-    background: #73AD21;
-    padding: 1%;
-    display: inline-table;
-    width: 60%;
+input[type="file"] {
+    padding: 1em;
+    margin-bottom: 1em;
 }
 
-.box {
-    /* width: 40%; */
-    background-color: lightgray; 
-    padding-top: 10px;
-}
-
-form {
-    margin-bottom: 20px;
-    text-align: center;
-    padding-left: 50px;
-}
-
-form.input {
-    text-align: center;
-}
-
-.div.formbox {
-    padding-bottom: 0;
-}
-
-input {
-    text-align: center;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-}
-
-table, th, td {
-    border: 1px solid grey;
-}
-
-th, td {
-    padding: 8px;
-    text-align: left;
-}
-
-tr:nth-child(odd) {
-    background-color: darkgray;
-}
-
-th {
-    background-color: lightgray;
-}
-
-input[type=password], input[type=number] {
+button.btn {
+    background-color: #4a90e2;
+    color: white;
     border: none;
-    border-bottom: 2px solid gray;
+    padding: 0.8em 1.5em;
+    cursor: pointer;
 }
 
-input[type=password]:focus, input[type=number]:focus {
-    border: none;
-    border-bottom: 2px solid red;
+button.btn:hover {
+    background-color: #357ABD;
 }
 
-input[type=password]:valid, input[type=number]:valid {
-    border: none;
-    border-bottom: 2px solid green;
-}
-
-.center {
-    text-align: center;
-}
-
+/* Responsive image and iframe styles */
 img {
-    width: 35%;
-    height: auto;
+    max-width: auto; /* Ensure images do not exceed container width */
+    height: 65vh; /* Maintain aspect ratio */
+}
+
+iframe {
+    max-width: 100%; /* Ensure iframes do not exceed container width */
+    min-height: 600px; /* Set a minimum height for PDFs */
+    height: 65vh; /* Set height to 78.5% of the viewport height */
+    border: none; /* Remove border for iframes */
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 1em;
+    background-color: #4a90e2;
+    color: white;
+    margin-top: 10%; /* Pushes the footer to the bottom */
+    width: auto;
+}
+
+
+/* Responsive design */
+@media (max-width: 768px) {
+    main {
+        padding: 1em; /* Adjust padding on small screens */
+    }
+
+    nav .logo {
+        font-size: 1.2em; /* Smaller logo on mobile */
+    }
+
+    iframe {
+        height: 50vh;
+        min-height: 450px; /* Set a minimum height for PDFs */
+    }
+
+    img {
+        height: 56vh; /* Maintain aspect ratio */
+    }
 }
