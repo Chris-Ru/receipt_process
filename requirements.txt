@@ -1,9 +1,9 @@
 #pip install -r requirements.txt
-flask 
-sqlalchemy 
+flask
+sqlalchemy
 #sqlite3
-opencv-python 
-pillow 
+opencv-python
+pillow
 pytesseract
 tesseract
 tesseract-ocr
