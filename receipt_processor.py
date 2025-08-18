@@ -8,6 +8,8 @@ import PIL
 
 from datetime import datetime
 
+from paddleocr import PaddleOCR
+
 import pytesseract
 from pdf2image import convert_from_path
 from PIL import Image
@@ -18,14 +20,17 @@ pytesseract.pytesseract.tesseract_cmd = '/usr/bin/tesseract'
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'pdf'}
 
+
 # Function to check allowed file types
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 
 def convert_pdf_to_images(pdf_path):
     """Convert a PDF file into images (one per page)."""
     images = convert_from_path(pdf_path)
     return images
+
 
 # Function to perform OCR on images
 def perform_ocr(image):
@@ -33,9 +38,11 @@ def perform_ocr(image):
     print(text)
     return text
 
+
 def extract_text(image):
     """Extract text from the preprocessed image using Tesseract OCR."""
     return pytesseract.image_to_string(image)
+
 
 def parse_receipt(text):
     """Parse relevant information from the extracted text."""
@@ -68,6 +75,7 @@ def parse_receipt(text):
 
     return data
 
+
 # Function to process uploaded files
 def process_receipt(file_path):
     # Check if the file exists before processing
@@ -86,6 +94,34 @@ def process_receipt(file_path):
         extracted_text = perform_ocr(image)
 
     parse_text = parse_receipt(extracted_text)
+    # print("Parsed Receipt Data: ", parse_text)  # Debug print
+
+###################################################### PADDLE OCR EXAMPLE
+    # Initialize PaddleOCR with the desired configuration
+    ocr = PaddleOCR(use_doc_orientation_classify=False, use_doc_unwarping=False, use_textline_orientation=False) # text detection + text recognition
+    # ocr = PaddleOCR(use_doc_orientation_classify=True, use_doc_unwarping=True) # text image preprocessing + text detection + textline orientation classification + text recognition
+    # ocr = PaddleOCR(use_doc_orientation_classify=False, use_doc_unwarping=False) # text detection + textline orientation classification + text recognition
+    # ocr = PaddleOCR(
+    #     text_detection_model_name="PP-OCRv5_mobile_det",
+    #     text_recognition_model_name="PP-OCRv5_mobile_rec",
+    #     use_doc_orientation_classify=False,
+    #     use_doc_unwarping=False,
+    #     use_textline_orientation=False) # Switch to PP-OCRv5_mobile models
+    result = ocr.predict(file_path)
+    OutputString = ""
+    for res in result:
+        res.print()
+        OutputString += OutputString + res['res']['rec_text'] + " "
+        # res.save_to_img("output")
+        # res.save_to_json("output")
+
+
+    # Join the extracted text lines into a single string, separated by newlines for readability
+    full_text_string = "\n".join(OutputString)
+
+    print("Parsed Receipt Data from PaddleOCR: \n", full_text_string)  # Debug print
+    ###################################################### END PADDLE OCR EXAMPLE
+######################################################
     
     # Process and save to the database
     store_name = parse_text.get('store_name', '')
@@ -108,6 +144,7 @@ def process_receipt(file_path):
     
     session.add(receipt)
     session.commit()
+
 
 def parse_date(text):
     # Define patterns for various date formats
@@ -151,6 +188,7 @@ def parse_date(text):
 
     return formatted_date
 
+
 def parse_time(text):
     # Define patterns for time formats
     time_patterns = [
@@ -176,6 +214,7 @@ def parse_time(text):
     
     return time_str
 
+
 def convert_to_12_hour_format(time_str):
     """Converts 24-hour format time to 12-hour format with AM/PM."""
     try:
@@ -185,6 +224,7 @@ def convert_to_12_hour_format(time_str):
         return time_obj.strftime('%I:%M %p')
     except ValueError:
         return time_str
+
 
 def find_total(text):
     lines = text.splitlines()
@@ -196,12 +236,14 @@ def find_total(text):
             break
     return total
 
+
 def parse_payment_method(text):
     payment_methods = ['Visa', 'MasterCard', 'Amex', 'Debit', 'Credit']
     for method in payment_methods:
         if re.search(method, text, re.IGNORECASE):
             return method
     return "Unknown"
+
 
 def parse_items(receipt_text):
     # Define a regular expression pattern to match item lines
@@ -225,6 +267,7 @@ def parse_items(receipt_text):
     print("Parsed Items: ", items)  # Debug print
     return items
 
+
 def parse_receipt(text):
     receipt_data = {}
 
@@ -246,6 +289,7 @@ def parse_receipt(text):
     receipt_data['payment_method'] = parse_payment_method(text)
 
     return receipt_data
+
 
 def update_receipt(receipt_id, store_name=None, date=None, time=None, total=None, payment_method=None):
     try:
@@ -274,6 +318,7 @@ def update_receipt(receipt_id, store_name=None, date=None, time=None, total=None
         print(f"An error occurred: {e}")
         session.rollback()
 
+
 def convert_pdf_to_image(pdf_path):
     images = convert_from_path(pdf_path)
     # For simplicity, just use the first page
@@ -282,6 +327,7 @@ def convert_pdf_to_image(pdf_path):
     image.save(image_bytes, format='JPEG')
     image_bytes.seek(0)
     return image_bytes
+
 
 def get_filepath_by_id(receipt_id):
     # Connect to the SQLite database
