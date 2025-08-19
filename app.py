@@ -4,11 +4,8 @@ from flask import Flask, request, render_template, redirect, url_for, flash, jso
 from werkzeug.utils import secure_filename
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from sqlalchemy import create_engine, Column, Integer, String, Float, ForeignKey
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, relationship
-
-from receipt_processor import *
+from receipt_processor import process_receipt, allowed_file, update_receipt, get_filepath_by_id
+from models import get_session
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)  # Generates a random 24-byte secret key
@@ -23,42 +20,15 @@ if not os.path.exists(UPLOAD_FOLDER):
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-DATABASE_URL = 'sqlite:///receipts.db'
+session = get_session()
 
-Base = declarative_base()
-
-class Item(Base):
-    __tablename__ = 'items'
-    item_id = Column(Integer, primary_key=True)
-    receipt_id = Column(Integer, ForeignKey('receipts.id'))
-    name = Column(String)
-    quantity = Column(Integer)
-    price = Column(Float)
-
-    receipt = relationship("Receipt", back_populates="items")
-
-class Receipt(Base):
-    __tablename__ = 'receipts'
-    id = Column(Integer, primary_key=True)
-    store_name = Column(String)
-    date = Column(String)
-    time = Column(String)
-    total = Column(Float)
-    payment_method = Column(String)
-    filepath = Column(String)
-
-    items = relationship("Item", back_populates="receipt", cascade="all, delete-orphan")
-
-engine = create_engine(DATABASE_URL)
-Base.metadata.create_all(engine)
-Session = sessionmaker(bind=engine)
-session = Session()
-
+from db import Receipt
 
 
 @app.route('/')
 def index():
     return render_template('index.html')
+
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
@@ -95,10 +65,12 @@ def upload_file():
     flash("All files processed successfully!")
     return redirect(url_for('show_receipts'))
 
+
 @app.route('/receipts')
 def show_receipts():
     receipts = session.query(Receipt).all()
     return render_template('results.html', receipts=receipts)
+
 
 @app.route('/delete', methods=['POST'])
 def delete_receipt():
@@ -129,6 +101,7 @@ def delete_receipt():
     else:
         flash("Error: Unauthorized access.", "error")
         return redirect(url_for('show_receipts'))
+
 
 @app.route('/update', methods=['POST'])
 def update_receipt_endpoint():
@@ -162,6 +135,7 @@ def serve_file(filepath):
     # Serve the file directly
     return send_file(file_path)
 
+
 @app.route('/display_image/<int:receipt_id>')
 def display_image(receipt_id):
     # Get the image URL based on the ID
@@ -174,6 +148,7 @@ def display_image(receipt_id):
     file_extension = image_url.split('.')[-1].lower()  # Get file extension
     # Pass the image URL to the template
     return render_template('display_receipt.html', image_url=image_url, file_extension=file_extension)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
