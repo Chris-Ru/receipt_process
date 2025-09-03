@@ -140,7 +140,7 @@ def serve_file(filepath):
 def display_image(receipt_id):
     # Get the image URL based on the ID
     print("URL = " + get_filepath_by_id(receipt_id))
-    image_url = "http://127.0.0.1:5000/file/" + get_filepath_by_id(receipt_id)
+    image_url = "http://localhost:5000/file/" + get_filepath_by_id(receipt_id)
     
     if not image_url:
         abort(404)  # Return 404 error if no URL is found
@@ -151,4 +151,4 @@ def display_image(receipt_id):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port=5000)
