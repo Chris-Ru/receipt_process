@@ -204,7 +204,7 @@ def find_total(text):
 
 
 def parse_payment_method(text):
-    payment_methods = ['Visa', 'MasterCard', 'Amex', 'Debit', 'Credit', 'Debit Card']
+    payment_methods = ['Visa', 'MasterCard', 'Amex', 'Debit', 'Credit', 'Debit Card', 'Cash']
     for method in payment_methods:
         if re.search(method, text, re.IGNORECASE):
             return method
