@@ -5,6 +5,7 @@ import sqlite3
 import PIL.ImageFilter
 import cv2
 import PIL
+from flask import flash, redirect, request, url_for
 
 from datetime import datetime
 
@@ -35,7 +36,7 @@ def convert_pdf_to_images(pdf_path):
     return images
 
 # Function to process uploaded files
-def process_receipt(file_path):
+async def process_receipt(file_path):
     # Check if the file exists before processing
     if not os.path.exists(file_path):
         raise FileNotFoundError(f"The file does not exist: {file_path}")
@@ -56,6 +57,7 @@ def process_receipt(file_path):
         extracted_text = perform_ocr(image)
 
     parse_text = parse_receipt(extracted_text)
+<<<<<<< Updated upstream
     # print("Parsed Receipt Data: ", parse_text)  # Debug print
     """
 
@@ -95,10 +97,34 @@ def process_receipt(file_path):
     items = parse_string.get('items', [])
     total = parse_string.get('total_due', '')
     payment_method = parse_string.get('payment_method', '')
+    # Process and save to the database
+    store_name = parse_text.get('store_name', '')
+    date = parse_text.get('date', '')
+    try:
+        date = parse_text.get('date', '')
+        if date is None:
+            raise Exception('No Date Exists')
+    except Exception as e:
+        flash(f"Error saving file: {str(e)}")
+        return #redirect(url_for('index'))
+        #return redirect(request.url)
+
+    try:
+        time = parse_text.get('time', '')
+        if time is None:
+            raise Exception('invalid time')
+    except Exception as e:
+        flash(f"Error saving file: {str(e)}")
+        return #redirect(url_for('index'))
+        #return redirect(request.url)
+
+    items = parse_text.get('items', [])
+    total = parse_text.get('total_due', '')
+    payment_method = parse_text.get('payment_method', '')
     filepath = file_path.strip('uploads/')
-    
+
     receipt = Receipt(store_name=store_name, date=date, time=time, total=total, payment_method=payment_method, filepath=filepath)
-    
+
     for item in items:
         item_obj = Item(
             name=item['name'],
@@ -106,9 +132,10 @@ def process_receipt(file_path):
             price=item['price']
         )
         receipt.items.append(item_obj)
-    
+
     session.add(receipt)
     session.commit()
+    flash(f"All files processed successfully!")
 
 
 def parse_date(text):

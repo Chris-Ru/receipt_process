@@ -31,7 +31,7 @@ def index():
 
 
 @app.route('/upload', methods=['POST'])
-def upload_file():
+async def upload_file():
     if 'files' not in request.files:
         flash('No files part')
         return redirect(request.url)
@@ -57,12 +57,12 @@ def upload_file():
                 return redirect(request.url)
 
             # Process the uploaded file with OCR
-            process_receipt(file_path)
+            await process_receipt(file_path)
         else:
             flash(f"Invalid file type: {file.filename}")
             return redirect(request.url)
 
-    flash("All files processed successfully!")
+    #flash("All files processed successfully!")
     return redirect(url_for('show_receipts'))
 
 
