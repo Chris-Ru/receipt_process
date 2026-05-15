@@ -11,7 +11,7 @@ from datetime import datetime
 
 from paddleocr import PaddleOCR
 
-#import pytesseract
+import pytesseract
 from pdf2image import convert_from_path
 from PIL import Image
 
@@ -35,6 +35,51 @@ def convert_pdf_to_images(pdf_path):
     images = convert_from_path(pdf_path)
     return images
 
+
+# Function to perform OCR on images
+def perform_ocr(image):
+    text = pytesseract.image_to_string(image)
+    print(text)
+    return text
+
+
+def extract_text(image):
+    """Extract text from the preprocessed image using Tesseract OCR."""
+    return pytesseract.image_to_string(image)
+
+
+def parse_receipt(text):
+    """Parse relevant information from the extracted text."""
+    lines = text.split('\n')
+
+    data = {
+        "store_name": None,
+        "date": None,
+        "items": [],
+        "total": None
+    }
+
+    for line in lines:
+        date_match = re.search(r'\d{1,2}/\d{1,2}/\d{2,4}', line)
+        if date_match:
+            data["date"] = date_match.group()
+
+        total_match = re.search(r'Total:\s*\$?(\d+\.\d{2})', line, re.IGNORECASE)
+        if total_match:
+            data["total"] = float(total_match.group(1))
+
+        if data["store_name"] is None:
+            data["store_name"] = line.strip()
+
+        item_match = re.search(r'(.+?)\s+\$?(\d+\.\d{2})', line)
+        if item_match:
+            item = item_match.group(1).strip()
+            price = float(item_match.group(2))
+            data["items"].append({"item": item, "price": price})
+
+    return data
+
+
 # Function to process uploaded files
 async def process_receipt(file_path):
     # Check if the file exists before processing
@@ -57,15 +102,11 @@ async def process_receipt(file_path):
         extracted_text = perform_ocr(image)
 
     parse_text = parse_receipt(extracted_text)
-<<<<<<< Updated upstream
     # print("Parsed Receipt Data: ", parse_text)  # Debug print
-    """
 
 ###################################################### PADDLE OCR EXAMPLE
     # Initialize PaddleOCR with the desired configuration
-    
-    ocr = PaddleOCR(use_doc_orientation_classify=True, use_doc_unwarping=False, use_textline_orientation=False, lang='en') # text detection + text recognition
-    
+    ocr = PaddleOCR(use_doc_orientation_classify=False, use_doc_unwarping=False, use_textline_orientation=False) # text detection + text recognition
     # ocr = PaddleOCR(use_doc_orientation_classify=True, use_doc_unwarping=True) # text image preprocessing + text detection + textline orientation classification + text recognition
     # ocr = PaddleOCR(use_doc_orientation_classify=False, use_doc_unwarping=False) # text detection + textline orientation classification + text recognition
     # ocr = PaddleOCR(
@@ -74,29 +115,22 @@ async def process_receipt(file_path):
     #     use_doc_orientation_classify=False,
     #     use_doc_unwarping=False,
     #     use_textline_orientation=False) # Switch to PP-OCRv5_mobile models
-    result = ocr.ocr(file_path)
-    # print(f"result: type is :", type(result),": \n\n", result, "\n\n")
-    rec_texts = result[0]['rec_texts']
-    # print(f"rec_texts: ")
+    result = ocr.predict(file_path)
+    OutputString = ""
+    for res in result:
+        res.print()
+        OutputString += OutputString + res['res']['rec_text'] + " "
+        # res.save_to_img("output")
+        # res.save_to_json("output")
+
 
     # Join the extracted text lines into a single string, separated by newlines for readability
-    full_text_string = "\n".join(rec_texts)
-    parse_string = parse_receipt(full_text_string)
+    full_text_string = "\n".join(OutputString)
 
-    print("Parsed Receipt Data from PaddleOCR: \n", parse_string)  # Debug print
-    with open("temp/output.txt", "w") as file:
-        file.write(full_text_string)
-
+    print("Parsed Receipt Data from PaddleOCR: \n", full_text_string)  # Debug print
     ###################################################### END PADDLE OCR EXAMPLE
 ######################################################
     
-    # Process and save to the database
-    store_name = parse_string.get('store_name', '')
-    date = parse_string.get('date', '')
-    time = parse_string.get('time', '')
-    items = parse_string.get('items', [])
-    total = parse_string.get('total_due', '')
-    payment_method = parse_string.get('payment_method', '')
     # Process and save to the database
     store_name = parse_text.get('store_name', '')
     date = parse_text.get('date', '')
@@ -135,7 +169,6 @@ async def process_receipt(file_path):
 
     session.add(receipt)
     session.commit()
-    flash(f"All files processed successfully!")
 
 
 def parse_date(text):

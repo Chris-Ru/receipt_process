@@ -2,11 +2,11 @@
 flask
 sqlalchemy
 #sqlite3
-opencv-python
-pillow
-#pytesseract
-#tesseract
-#tesseract-ocr
+opencv-python 
+pillow 
+pytesseract
+tesseract
+tesseract-ocr
 pdf2image
 datefinder
 paddleocr
