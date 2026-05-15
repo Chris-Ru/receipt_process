@@ -5,6 +5,7 @@ import sqlite3
 import PIL.ImageFilter
 import cv2
 import PIL
+from flask import flash, redirect, request, url_for
 
 from datetime import datetime
 
@@ -14,9 +15,12 @@ import pytesseract
 from pdf2image import convert_from_path
 from PIL import Image
 
-from app import Receipt, Item, session
+from db import Receipt, Item
+from models import get_session
 
-pytesseract.pytesseract.tesseract_cmd = '/usr/bin/tesseract'
+session = get_session()
+
+#pytesseract.pytesseract.tesseract_cmd = '/usr/bin/tesseract'
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'pdf'}
 
@@ -27,7 +31,7 @@ def allowed_file(filename):
 
 
 def convert_pdf_to_images(pdf_path):
-    """Convert a PDF file into images (one per page)."""
+    # Convert a PDF file into images (one per page).
     images = convert_from_path(pdf_path)
     return images
 
@@ -77,14 +81,18 @@ def parse_receipt(text):
 
 
 # Function to process uploaded files
-def process_receipt(file_path):
+async def process_receipt(file_path):
     # Check if the file exists before processing
     if not os.path.exists(file_path):
         raise FileNotFoundError(f"The file does not exist: {file_path}")
+    else:
+        print(f"The file path is ", file_path)
 
     # Your OCR processing code here
     # Example:
+    """
     extracted_text = ""
+    
     if file_path.lower().endswith('.pdf'):
         images = convert_from_path(file_path)
         for image in images:
@@ -126,14 +134,31 @@ def process_receipt(file_path):
     # Process and save to the database
     store_name = parse_text.get('store_name', '')
     date = parse_text.get('date', '')
-    time = parse_text.get('time', '')
+    try:
+        date = parse_text.get('date', '')
+        if date is None:
+            raise Exception('No Date Exists')
+    except Exception as e:
+        flash(f"Error saving file: {str(e)}")
+        return #redirect(url_for('index'))
+        #return redirect(request.url)
+
+    try:
+        time = parse_text.get('time', '')
+        if time is None:
+            raise Exception('invalid time')
+    except Exception as e:
+        flash(f"Error saving file: {str(e)}")
+        return #redirect(url_for('index'))
+        #return redirect(request.url)
+
     items = parse_text.get('items', [])
     total = parse_text.get('total_due', '')
     payment_method = parse_text.get('payment_method', '')
     filepath = file_path.strip('uploads/')
-    
+
     receipt = Receipt(store_name=store_name, date=date, time=time, total=total, payment_method=payment_method, filepath=filepath)
-    
+
     for item in items:
         item_obj = Item(
             name=item['name'],
@@ -141,7 +166,7 @@ def process_receipt(file_path):
             price=item['price']
         )
         receipt.items.append(item_obj)
-    
+
     session.add(receipt)
     session.commit()
 
@@ -192,11 +217,12 @@ def parse_date(text):
 def parse_time(text):
     # Define patterns for time formats
     time_patterns = [
-        r'\b(\d{1,2}:\d{2} [APM]{2})\b',       # HH:MM AM/PM (12-hour format)
+        r'\b(\d{1,2}:\d{2} [APM]{2})\b',       # HH:MM (AM/PM) (12-hour format)
+        r'\b(\d{1,2}:\d{2}[APM]{2})\b',       # HH:MM(AM/PM) (12-hour format)
         r'\b(\d{2}:\d{2})\b',                  # HH:MM (24-hour format)
-        r'\b(\d{1,2}:\d{2}:\d{2} [APM]{2})\b', # H:MM:SS AM/PM
-        r'\b(\d{1,2}:\d{2}:\d{2}[\w]{1})\b',   # HH:MM:SS A/P
-        r'\b(\d{1,2}:\d{2}:\d{2}[\w]{1})\b',   # HH:MM:SS A/P
+        r'\b(\d{1,2}:\d{2}:\d{2} [APM]{2})\b', # H:MM:SS (AM/PM)
+        r'\b(\d{1,2}:\d{2}:\d{2}[\w]{1})\b',   # HH:MM:SS (AM/PM)
+        r'\b(\d{1,2}:\d{2}:\d{2}[\w]{1})\b',   # HH:MM:SS (AM/PM)
     ]
     
     # Extract time
@@ -238,7 +264,7 @@ def find_total(text):
 
 
 def parse_payment_method(text):
-    payment_methods = ['Visa', 'MasterCard', 'Amex', 'Debit', 'Credit']
+    payment_methods = ['Visa', 'MasterCard', 'Amex', 'Debit', 'Credit', 'Debit Card', 'Cash']
     for method in payment_methods:
         if re.search(method, text, re.IGNORECASE):
             return method
