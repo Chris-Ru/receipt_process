@@ -24,7 +24,6 @@ session = get_session()
 
 from db import Receipt
 
-
 @app.route('/')
 def index():
     return render_template('index.html')
